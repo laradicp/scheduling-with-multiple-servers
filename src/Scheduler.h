@@ -11,7 +11,7 @@ class Scheduler
         Data data;
         int solutionCost;
         std::vector<int> remainingCapacity;
-        std::vector<std::vector<int>> solution;
+        std::vector<int> solution;
 
         int selectBestServer(int j);
         
