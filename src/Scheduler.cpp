@@ -78,7 +78,7 @@ void Scheduler::printSolution()
 {
     // jobsInServers indicates which jobs are in each server
     // s = n corresponds to server n - 1
-    std::vector<std::vector<int>> jobsInServers(data.getNumOfServers() + 1,
+    std::vector<std::vector<int> > jobsInServers(data.getNumOfServers() + 1,
         std::vector<int>(0, 0));
     for(int j = 0; j < data.getNumOfJobs(); j++)
     {
@@ -108,7 +108,7 @@ bool Scheduler::swap()
     int bestTime1 = 0;
     int bestTime2 = 0;
 
-    for(int i = 0; i < data.getNumOfJobs() - 1; j++)
+    for(int i = 0; i < data.getNumOfJobs() - 1; i++)
     {
         for(int j = i+1; j < data.getNumOfJobs(); j++)
         {
@@ -138,18 +138,18 @@ bool Scheduler::swap()
             }
         }
     }
-    
+
     if (swapped)
     {
         int auxVar = solution[swap1];
         solution[swap1] = solution[swap2];
         solution[swap2] = auxVar;
         solutionCost = bestCost;
-        remainingCapacity[swap1] += newTime1;
-        remainingCapacity[swap2] += newTime2;
+        remainingCapacity[swap1] += bestTime1;
+        remainingCapacity[swap2] += bestTime2;
     }
 
-    return swapped
+    return swapped;
 }
 
 void Scheduler::vnd()
@@ -163,9 +163,9 @@ void Scheduler::vnd()
         inserted = false;
 
         if (k == 0)
-            swapped = Swap();
+            swapped = swap();
         else if(k == 1)
-            inserted = Insertion();
+            inserted = inverted();
 
         if(swapped || inserted)
             k = 0;
