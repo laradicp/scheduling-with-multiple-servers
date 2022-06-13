@@ -170,12 +170,59 @@ bool Scheduler::swape()
     return swapped;
 }
 
+bool Scheduler::insertion()
+{
+    int bestCost = solutionCost;
+    int jobToInsert = -1;
+    int serverToInsert = -2;
+    int prevServer = -2;
+    bool inserted = false;
+
+    for(int i = 0; i < data.getNumOfJobs(); i++)
+    {
+        for(int j = -1; j < data.getNumOfServers(); j++)
+        {
+            if (solution[i] == j)
+                continue;
+            
+            if ((j == -1) || (data.getProcessingTime(j, i) <= remainingCapacity[j]))
+            {
+                int currentCost = solutionCost;
+                currentCost -= data.getProcessingCost(solution[i], i);
+                currentCost += data.getProcessingCost(j, i);
+
+                if (currentCost < bestCost)
+                {
+                    bestCost = currentCost;
+                    prevServer = solution[i];
+                    jobToInsert = i;
+                    serverToInsert = j;
+                    inserted = true;
+                }
+
+            }
+            
+        }
+    }
+    if (inserted)
+    {
+        if (prevServer != -1)
+            remainingCapacity[prevServer] += data.getProcessingCost(prevServer, jobToInsert);
+        if (serverToInsert != -1)
+            remainingCapacity[serverToInsert] -= data.getProcessingCost(serverToInsert, jobToInsert);
+        solutionCost = bestCost;
+        solution[jobToInsert] = serverToInsert;
+    }
+
+    return inserted;
+}
+
 void Scheduler::vnd()
 {
     int k = 0;
     bool swapped = false;
     bool inserted = false;
-    while(k < 1)
+    while(k < 2)
     {
         swapped = false;
         inserted = false;
@@ -183,7 +230,7 @@ void Scheduler::vnd()
         if (k == 0)
             swapped = swape();
         else if(k == 1)
-            inserted = true;
+            inserted = insertion();
 
         if(swapped || inserted)
             k = 0;

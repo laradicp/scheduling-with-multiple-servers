@@ -21,7 +21,7 @@ class Scheduler
         void printSolution();
         void vnd();
         bool swape();
-        int insertion();
+        bool insertion();
 };
 
 #endif
