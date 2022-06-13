@@ -1,11 +1,13 @@
 #include "Scheduler.h"
 
-Scheduler::Scheduler(std::string filePath)
+Scheduler::Scheduler(std::string filePath, double r)
 {
     // initialize data
     data = Data(filePath);
 
     solutionCost = 0;
+
+    randomness = r;
 
     for(int s = 0; s < data.getNumOfServers(); s++)
     {
@@ -16,14 +18,16 @@ Scheduler::Scheduler(std::string filePath)
     {
         solution.push_back(-1);
     }
+
+    srand(time(NULL));
 }
 
 void Scheduler::initialSolution()
 {
-    int startJob = 0; // change to rand
+    int startJob = rand()%data.getNumOfJobs();
     for(int j = startJob; j < data.getNumOfJobs(); j++)
     {
-        int s = selectBestServer(j);
+        int s = selectServer(j);
         if(s == -1)
         {
             solutionCost += data.getLocalProcessingCost();
@@ -37,7 +41,7 @@ void Scheduler::initialSolution()
     }
     for(int j = 0; j < startJob; j++)
     {
-        int s = selectBestServer(j);
+        int s = selectServer(j);
         if(s == -1)
         {
             solutionCost += data.getLocalProcessingCost();
@@ -53,25 +57,35 @@ void Scheduler::initialSolution()
     return;
 }
 
-int Scheduler::selectBestServer(int j)
+bool Scheduler::compareServers(CandidateServer s1, CandidateServer s2)
 {
-    int bestServer = -1;
-    double bestRelativeCost = __FLT_MAX__;
+    return s1.relativeCost <= s2.relativeCost;
+}
+
+int Scheduler::selectServer(int j)
+{
+    std::vector<CandidateServer> candidateServers;
+
+    candidateServers.push_back(CandidateServer(-1, data.getLocalProcessingCost()));
+
     for(int s = 0; s < data.getNumOfServers(); s++)
     {
         if(data.getProcessingTime(s, j) <= remainingCapacity[s])
         {
-            double relativeCost = data.getProcessingTime(s, j)*data.getProcessingCost(s, j)/
-                remainingCapacity[s];
-            if(relativeCost < bestRelativeCost)
-            {
-                bestRelativeCost = relativeCost;
-                bestServer = s;
-            }
+            candidateServers.push_back(CandidateServer(s,
+                data.getProcessingTime(s, j)*data.getProcessingCost(s, j)/remainingCapacity[s]));
         }
     }
 
-    return bestServer;
+    std::sort(candidateServers.begin(), candidateServers.end(), compareServers);
+
+    if((int)randomness*candidateServers.size() > 0)
+    {
+        int i = rand()%(int)(randomness*candidateServers.size());
+        return candidateServers[i].server;
+    }
+
+    return candidateServers[0].server;
 }
 
 void Scheduler::printSolution()
