@@ -77,5 +77,8 @@ int Data::getProcessingTime(int s, int j)
 
 int Data::getProcessingCost(int s, int j)
 {
-    return processingCosts[s][j];
+    if (s == -1)
+        return getLocalProcessingCost();
+    else
+        return processingCosts[s][j];
 }

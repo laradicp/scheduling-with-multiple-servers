@@ -33,6 +33,9 @@ class Scheduler
         Scheduler(std::string filePath, double r = 0.3);
         void initialSolution();
         void printSolution();
+        void vnd();
+        bool swape();
+        bool insertion();
 };
 
 #endif

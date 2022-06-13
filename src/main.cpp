@@ -14,6 +14,8 @@ int main(int argc, char** argv)
 
     scheduler.initialSolution();
     scheduler.printSolution();
+    scheduler.vnd();
+    scheduler.printSolution();
     
     return 0;
 }
