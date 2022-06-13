@@ -20,7 +20,7 @@ class Scheduler
         void initialSolution();
         void printSolution();
         void vnd();
-        int swap();
+        bool swape();
         int insertion();
 };
 

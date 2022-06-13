@@ -99,7 +99,7 @@ void Scheduler::printSolution()
     return;
 }
 
-bool Scheduler::swap()
+bool Scheduler::swape()
 {
     int bestCost = solutionCost;
     bool swapped = false;
@@ -115,9 +115,24 @@ bool Scheduler::swap()
             if (solution[i] == solution[j])
                 continue;
 
-            int newTime1 = data.getProcessingTime(solution[i], j) - data.getProcessingTime(solution[i], i);
-            int newTime2 = data.getProcessingTime(solution[j], i) - data.getProcessingTime(solution[j], i);
-            if (newTime1 <= remainingCapacity(solution[i]) && newTime2 <= remainingCapacity(solution[j]))
+            bool timeConstraint = true;
+            int newTime1 = 0;
+            int newTime2 = 0;
+            int capacity1 = 0;
+            int capacity2 = 0;
+
+            if (solution[i] >= 0)
+            {
+                newTime1 = data.getProcessingTime(solution[i], j) - data.getProcessingTime(solution[i], i);
+                capacity1 = remainingCapacity[solution[i]];
+            }
+            if (solution[j] >= 0)
+            {
+                newTime2 = data.getProcessingTime(solution[j], i) - data.getProcessingTime(solution[j], i);
+                capacity2 = remainingCapacity[solution[j]];
+            }
+
+            if (newTime1 <= capacity1 && newTime2 <= capacity2)
             {
                 int currentCost = solutionCost;
                 currentCost -= data.getProcessingCost(solution[i], i);
@@ -141,12 +156,15 @@ bool Scheduler::swap()
 
     if (swapped)
     {
+        solutionCost = bestCost;
+
         int auxVar = solution[swap1];
         solution[swap1] = solution[swap2];
         solution[swap2] = auxVar;
-        solutionCost = bestCost;
-        remainingCapacity[swap1] += bestTime1;
-        remainingCapacity[swap2] += bestTime2;
+        if (solution[swap1] >= 0)
+            remainingCapacity[solution[swap1]] += bestTime1;
+        if (solution[swap2] >= 0)
+            remainingCapacity[solution[swap2]] += bestTime2;
     }
 
     return swapped;
@@ -157,15 +175,15 @@ void Scheduler::vnd()
     int k = 0;
     bool swapped = false;
     bool inserted = false;
-    while(k < 2)
+    while(k < 1)
     {
         swapped = false;
         inserted = false;
 
         if (k == 0)
-            swapped = swap();
+            swapped = swape();
         else if(k == 1)
-            inserted = inverted();
+            inserted = true;
 
         if(swapped || inserted)
             k = 0;

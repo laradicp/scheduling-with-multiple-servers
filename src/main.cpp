@@ -13,7 +13,8 @@ int main(int argc, char** argv)
     Scheduler scheduler = Scheduler(argv[1]);
 
     scheduler.initialSolution();
-    //scheduler.Vnd();
+    scheduler.printSolution();
+    scheduler.vnd();
     scheduler.printSolution();
     
     return 0;
