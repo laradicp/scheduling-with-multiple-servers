@@ -98,3 +98,80 @@ void Scheduler::printSolution()
 
     return;
 }
+
+bool Scheduler::swap()
+{
+    int bestCost = solutionCost;
+    bool swapped = false;
+    int swap1 = -1;
+    int swap2 = -1;
+    int bestTime1 = 0;
+    int bestTime2 = 0;
+
+    for(int i = 0; i < data.getNumOfJobs() - 1; j++)
+    {
+        for(int j = i+1; j < data.getNumOfJobs(); j++)
+        {
+            if (solution[i] == solution[j])
+                continue;
+
+            int newTime1 = data.getProcessingTime(solution[i], j) - data.getProcessingTime(solution[i], i);
+            int newTime2 = data.getProcessingTime(solution[j], i) - data.getProcessingTime(solution[j], i);
+            if (newTime1 <= remainingCapacity(solution[i]) && newTime2 <= remainingCapacity(solution[j]))
+            {
+                int currentCost = solutionCost;
+                currentCost -= data.getProcessingCost(solution[i], i);
+                currentCost -= data.getProcessingCost(solution[j], j);
+                currentCost += data.getProcessingCost(solution[i], j);
+                currentCost += data.getProcessingCost(solution[j], i);
+                if(currentCost < bestCost)
+                {
+                    bestTime1 = newTime1;
+                    bestTime2 = newTime2;
+
+                    swapped = true;
+                    bestCost = currentCost;
+
+                    swap1 = i;
+                    swap2 = j;
+                }
+            }
+        }
+    }
+    
+    if (swapped)
+    {
+        int auxVar = solution[swap1];
+        solution[swap1] = solution[swap2];
+        solution[swap2] = auxVar;
+        solutionCost = bestCost;
+        remainingCapacity[swap1] += newTime1;
+        remainingCapacity[swap2] += newTime2;
+    }
+
+    return swapped
+}
+
+void Scheduler::vnd()
+{
+    int k = 0;
+    bool swapped = false;
+    bool inserted = false;
+    while(k < 2)
+    {
+        swapped = false;
+        inserted = false;
+
+        if (k == 0)
+            swapped = Swap();
+        else if(k == 1)
+            inserted = Insertion();
+
+        if(swapped || inserted)
+            k = 0;
+        else
+            k++;
+
+    }
+
+}

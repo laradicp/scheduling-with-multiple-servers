@@ -19,6 +19,9 @@ class Scheduler
         Scheduler(std::string filePath);
         void initialSolution();
         void printSolution();
+        void vnd();
+        int swap();
+        int insertion();
 };
 
 #endif
