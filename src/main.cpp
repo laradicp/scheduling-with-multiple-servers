@@ -21,7 +21,7 @@ int main(int argc, char** argv)
 
     auto start = std::chrono::system_clock::now();
 
-    for(int i = 0; i < 15; i++)
+    for(int i = 0; i < 100; i++)
     {
         scheduler.initialSolution();
         scheduler.vnd();

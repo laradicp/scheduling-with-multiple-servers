@@ -33,7 +33,7 @@ class Scheduler
     public:
         Data data;
 
-        Scheduler(std::string filePath, double r = 0.3);
+        Scheduler(std::string filePath);
         void initialSolution();
         void vnd();
 

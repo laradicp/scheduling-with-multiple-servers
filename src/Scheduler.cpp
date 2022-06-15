@@ -1,13 +1,11 @@
 #include "Scheduler.h"
 
-Scheduler::Scheduler(std::string filePath, double r)
+Scheduler::Scheduler(std::string filePath)
 {
     // initialize data
     data = Data(filePath);
 
     solutionCost = 0;
-
-    randomness = r;
 
     for(int s = 0; s < data.getNumOfServers(); s++)
     {
@@ -26,6 +24,7 @@ void Scheduler::initialSolution()
 {
     // reset solution
     solutionCost = 0;
+    randomness = rand()%10*0.1 + 0.1;
     for(int s = 0; s < data.getNumOfServers(); s++)
     {
         remainingCapacity[s] = data.getServerCapacity(s);
@@ -227,9 +226,9 @@ void Scheduler::vnd()
         inserted = false;
 
         if(k == 0)
-            swapped = swap();
-        else if(k == 1)
             inserted = insertion();
+        else if(k == 1)
+            swapped = swap();
 
         if(swapped || inserted)
             k = 0;
