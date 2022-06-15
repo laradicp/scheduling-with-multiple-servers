@@ -108,9 +108,9 @@ bool Scheduler::swap()
 
     for(int i = 0; i < data.getNumOfJobs() - 1; i++)
     {
-        for(int j = i+1; j < data.getNumOfJobs(); j++)
+        for(int j = i + 1; j < data.getNumOfJobs(); j++)
         {
-            if (solution[i] == solution[j])
+            if(solution[i] == solution[j])
                 continue;
 
             bool timeConstraint = true;
@@ -119,18 +119,18 @@ bool Scheduler::swap()
             int capacity1 = 0;
             int capacity2 = 0;
 
-            if (solution[i] >= 0)
+            if(solution[i] >= 0)
             {
                 newTime1 = data.getProcessingTime(solution[i], j) - data.getProcessingTime(solution[i], i);
                 capacity1 = remainingCapacity[solution[i]];
             }
-            if (solution[j] >= 0)
+            if(solution[j] >= 0)
             {
-                newTime2 = data.getProcessingTime(solution[j], i) - data.getProcessingTime(solution[j], i);
+                newTime2 = data.getProcessingTime(solution[j], i) - data.getProcessingTime(solution[j], j);
                 capacity2 = remainingCapacity[solution[j]];
             }
 
-            if (newTime1 <= capacity1 && newTime2 <= capacity2)
+            if(newTime1 <= capacity1 && newTime2 <= capacity2)
             {
                 int currentCost = solutionCost;
                 currentCost -= data.getProcessingCost(solution[i], i);
@@ -152,17 +152,18 @@ bool Scheduler::swap()
         }
     }
 
-    if (swapped)
+    if(swapped)
     {
         solutionCost = bestCost;
+
+        if(solution[swap1] >= 0)
+            remainingCapacity[solution[swap1]] -= bestTime1;
+        if(solution[swap2] >= 0)
+            remainingCapacity[solution[swap2]] -= bestTime2;
 
         int auxVar = solution[swap1];
         solution[swap1] = solution[swap2];
         solution[swap2] = auxVar;
-        if (solution[swap1] >= 0)
-            remainingCapacity[solution[swap1]] += bestTime1;
-        if (solution[swap2] >= 0)
-            remainingCapacity[solution[swap2]] += bestTime2;
     }
 
     return swapped;
@@ -176,25 +177,25 @@ bool Scheduler::insertion()
     int prevServer = -2;
     bool inserted = false;
 
-    for(int i = 0; i < data.getNumOfJobs(); i++)
+    for(int j = 0; j < data.getNumOfJobs(); j++)
     {
-        for(int j = -1; j < data.getNumOfServers(); j++)
+        for(int s = -1; s < data.getNumOfServers(); s++)
         {
-            if (solution[i] == j)
+            if(solution[j] == s)
                 continue;
             
-            if ((j == -1) || (data.getProcessingTime(j, i) <= remainingCapacity[j]))
+            if((s == -1) || (data.getProcessingTime(s, j) <= remainingCapacity[s]))
             {
                 int currentCost = solutionCost;
-                currentCost -= data.getProcessingCost(solution[i], i);
-                currentCost += data.getProcessingCost(j, i);
+                currentCost -= data.getProcessingCost(solution[j], j);
+                currentCost += data.getProcessingCost(s, j);
 
-                if (currentCost < bestCost)
+                if(currentCost < bestCost)
                 {
                     bestCost = currentCost;
-                    prevServer = solution[i];
-                    jobToInsert = i;
-                    serverToInsert = j;
+                    prevServer = solution[j];
+                    jobToInsert = j;
+                    serverToInsert = s;
                     inserted = true;
                 }
 
@@ -202,12 +203,12 @@ bool Scheduler::insertion()
             
         }
     }
-    if (inserted)
+    if(inserted)
     {
-        if (prevServer != -1)
-            remainingCapacity[prevServer] += data.getProcessingCost(prevServer, jobToInsert);
-        if (serverToInsert != -1)
-            remainingCapacity[serverToInsert] -= data.getProcessingCost(serverToInsert, jobToInsert);
+        if(prevServer != -1)
+            remainingCapacity[prevServer] += data.getProcessingTime(prevServer, jobToInsert);
+        if(serverToInsert != -1)
+            remainingCapacity[serverToInsert] -= data.getProcessingTime(serverToInsert, jobToInsert);
         solutionCost = bestCost;
         solution[jobToInsert] = serverToInsert;
     }
@@ -225,7 +226,7 @@ void Scheduler::vnd()
         swapped = false;
         inserted = false;
 
-        if (k == 0)
+        if(k == 0)
             swapped = swap();
         else if(k == 1)
             inserted = insertion();
