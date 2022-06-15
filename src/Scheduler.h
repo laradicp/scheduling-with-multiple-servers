@@ -28,7 +28,7 @@ class Scheduler
         int selectServer(int j);
         static bool compareServers(CandidateServer s1, CandidateServer s2);
         bool swap();
-        bool insertion();
+        bool reinsertion();
         
     public:
         Data data;

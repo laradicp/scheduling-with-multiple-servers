@@ -168,7 +168,7 @@ bool Scheduler::swap()
     return swapped;
 }
 
-bool Scheduler::insertion()
+bool Scheduler::reinsertion()
 {
     int bestCost = solutionCost;
     int jobToInsert = -1;
@@ -226,7 +226,7 @@ void Scheduler::vnd()
         inserted = false;
 
         if(k == 0)
-            inserted = insertion();
+            inserted = reinsertion();
         else if(k == 1)
             swapped = swap();
 

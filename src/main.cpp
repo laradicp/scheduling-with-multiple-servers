@@ -11,7 +11,7 @@ int main(int argc, char** argv)
         return 0;
     }
 
-    Scheduler scheduler = Scheduler(argv[1], 0.25);
+    Scheduler scheduler = Scheduler(argv[1]);
     int bestCost = scheduler.data.getLocalProcessingCost()*scheduler.data.getNumOfJobs();
     std::vector<int> bestSolution;
     for(int j = 0; j < scheduler.data.getNumOfJobs(); j++)
