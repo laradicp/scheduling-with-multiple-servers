@@ -9,7 +9,6 @@
 class Scheduler
 {
     private:
-        Data data;
         int solutionCost;
         double randomness;
         std::vector<int> remainingCapacity;
@@ -28,14 +27,20 @@ class Scheduler
 
         int selectServer(int j);
         static bool compareServers(CandidateServer s1, CandidateServer s2);
+        bool swap();
+        bool insertion();
         
     public:
+        Data data;
+
         Scheduler(std::string filePath, double r = 0.3);
         void initialSolution();
-        void printSolution();
         void vnd();
-        bool swape();
-        bool insertion();
+
+        void printSolution();
+        void printSolution(std::vector<int> solution);
+        std::vector<int> getSolution();
+        int getSolutionCost();
 };
 
 #endif

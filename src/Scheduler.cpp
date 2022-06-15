@@ -24,12 +24,20 @@ Scheduler::Scheduler(std::string filePath, double r)
 
 void Scheduler::initialSolution()
 {
+    // reset solution
+    solutionCost = 0;
+    for(int s = 0; s < data.getNumOfServers(); s++)
+    {
+        remainingCapacity[s] = data.getServerCapacity(s);
+    }
+
     int startJob = rand()%data.getNumOfJobs();
     for(int j = startJob; j < data.getNumOfJobs(); j++)
     {
         int s = selectServer(j);
         if(s == -1)
         {
+            solution[j] = -1;
             solutionCost += data.getLocalProcessingCost();
         }
         else
@@ -44,6 +52,7 @@ void Scheduler::initialSolution()
         int s = selectServer(j);
         if(s == -1)
         {
+            solution[j] = -1;
             solutionCost += data.getLocalProcessingCost();
         }
         else
@@ -88,32 +97,7 @@ int Scheduler::selectServer(int j)
     return candidateServers[0].server;
 }
 
-void Scheduler::printSolution()
-{
-    // jobsInServers indicates which jobs are in each server
-    // s = n corresponds to server n - 1
-    std::vector<std::vector<int> > jobsInServers(data.getNumOfServers() + 1,
-        std::vector<int>(0, 0));
-    for(int j = 0; j < data.getNumOfJobs(); j++)
-    {
-        jobsInServers[solution[j] + 1].push_back(j);
-    }
-
-    for(int s = 0; s < data.getNumOfServers() + 1; s++)
-    {
-        std::cout << "Server " << s - 1 << ":" << std::endl;
-        for(int i = 0; i < jobsInServers[s].size(); i++)
-        {
-            std::cout << "\t" << jobsInServers[s][i] << std::endl;
-        }
-    }
-
-    std::cout << "Total cost:\t" << solutionCost << std::endl;
-
-    return;
-}
-
-bool Scheduler::swape()
+bool Scheduler::swap()
 {
     int bestCost = solutionCost;
     bool swapped = false;
@@ -242,7 +226,7 @@ void Scheduler::vnd()
         inserted = false;
 
         if (k == 0)
-            swapped = swape();
+            swapped = swap();
         else if(k == 1)
             inserted = insertion();
 
@@ -253,4 +237,74 @@ void Scheduler::vnd()
 
     }
 
+}
+
+void Scheduler::printSolution()
+{
+    // jobsInServers indicates which jobs are in each server
+    // s = n corresponds to server n - 1
+    std::vector<std::vector<int> > jobsInServers(data.getNumOfServers() + 1,
+        std::vector<int>(0, 0));
+    for(int j = 0; j < data.getNumOfJobs(); j++)
+    {
+        jobsInServers[solution[j] + 1].push_back(j);
+    }
+
+    for(int s = 0; s < data.getNumOfServers() + 1; s++)
+    {
+        std::cout << "Server " << s - 1 << ":" << std::endl;
+        for(int i = 0; i < jobsInServers[s].size(); i++)
+        {
+            std::cout << "\t" << jobsInServers[s][i] << std::endl;
+        }
+    }
+
+    std::cout << "Total cost:\t" << solutionCost << std::endl;
+
+    return;
+}
+
+void Scheduler::printSolution(std::vector<int> solution)
+{
+    // jobsInServers indicates which jobs are in each server
+    // s = n corresponds to server n - 1
+    int solutionCost = 0;
+    std::vector<std::vector<int> > jobsInServers(data.getNumOfServers() + 1,
+        std::vector<int>(0, 0));
+    for(int j = 0; j < data.getNumOfJobs(); j++)
+    {
+        jobsInServers[solution[j] + 1].push_back(j);
+
+        if(solution[j] == -1)
+        {
+            solutionCost += data.getLocalProcessingCost();
+        }
+        else
+        {
+            solutionCost += data.getProcessingCost(solution[j], j);
+        }
+    }
+
+    for(int s = 0; s < data.getNumOfServers() + 1; s++)
+    {
+        std::cout << "Server " << s - 1 << ":" << std::endl;
+        for(int i = 0; i < jobsInServers[s].size(); i++)
+        {
+            std::cout << "\t" << jobsInServers[s][i] << std::endl;
+        }
+    }
+
+    std::cout << "Total cost:\t" << solutionCost << std::endl;
+
+    return;
+}
+
+std::vector<int> Scheduler::getSolution()
+{
+    return solution;
+}
+
+int Scheduler::getSolutionCost()
+{
+    return solutionCost;
 }
